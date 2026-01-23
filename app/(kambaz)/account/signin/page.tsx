@@ -7,6 +7,5 @@ export default function Signin() {
       <input className="wd-password" placeholder="password" type="password" /> <br />
       <Link id="wd-signin-btn" href="/dashboard"> Sign in </Link> <br />
       <Link id="wd-signup-link" href="signup"> Sign up </Link>
-
     </div>
 );}
