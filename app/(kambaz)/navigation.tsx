@@ -28,35 +28,35 @@ export default function KambazNavigation() {
         <Link href="/dashboard" id="wd-dashboard-link" className="text-decoration-none">
           <AiOutlineDashboard className="fs-1 text-danger" />
           <br />
-          <span className="text-danger">Dashboard</span>
+          <span className={pathname.includes("/dashboard") ? "text-danger" : "text-white"}>Dashboard</span>
         </Link>
       </ListGroupItem>
       <ListGroupItem className={`border-0 text-center ${pathname.includes("/courses") ? "bg-white" : "bg-black"}`}>
         <Link href="/courses" id="wd-course-link" className="text-decoration-none">
           <LiaBookSolid className="fs-1 text-danger" />
           <br />
-          <span className="text-danger">Courses</span>
+          <span className={pathname.includes("/courses") ? "text-danger" : "text-white"}>Courses</span>
         </Link>
       </ListGroupItem>
       <ListGroupItem className={`border-0 text-center ${pathname.includes("/calendar") ? "bg-white" : "bg-black"}`}>
         <Link href="/calendar" id="wd-calendar-link" className="text-decoration-none">
           <IoCalendarOutline className="fs-1 text-danger" />
           <br />
-          <span className="text-danger">Calendar</span>
+          <span className={pathname.includes("/calendar") ? "text-danger" : "text-white"}>Calendar</span>
         </Link>
       </ListGroupItem>
       <ListGroupItem className={`border-0 text-center ${pathname.includes("/inbox") ? "bg-white" : "bg-black"}`}>
         <Link href="/inbox" id="wd-inbox-link" className="text-decoration-none">
           <FaInbox className="fs-1 text-danger" />
           <br />
-          <span className="text-danger">Inbox</span>
+          <span className={pathname.includes("/inbox") ? "text-danger" : "text-white"}>Inbox</span>
         </Link>
       </ListGroupItem>
       <ListGroupItem className={`border-0 text-center ${pathname.includes("/labs") ? "bg-white" : "bg-black"}`}>
         <Link href="/labs" id="wd-labs-link" className="text-decoration-none">
           <LiaCogSolid className="fs-1 text-danger" />
           <br />
-          <span className="text-danger">Labs</span>
+          <span className={pathname.includes("/labs") ? "text-danger" : "text-white"}>Labs</span>
         </Link>
       </ListGroupItem>
     </ListGroup>
