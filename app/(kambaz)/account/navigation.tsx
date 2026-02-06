@@ -1,9 +1,28 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 export default function AccountNavigation() {
- return (
-   <div id="wd-account-navigation">
-     <Link href="/account/signin"> Signin </Link> <br />
-     <Link href="/account/signup"> Signup </Link> <br />
-     <Link href="/account/profile"> Profile </Link> <br />
-   </div>
-);}
+  const pathname = usePathname();
+  const links = [
+    { label: "Signin", path: "/account/signin" },
+    { label: "Signup", path: "/account/signup" },
+    { label: "Profile", path: "/account/profile" },
+  ];
+
+  return (
+    <div id="wd-account-navigation" className="wd list-group fs-5 rounded-0">
+      {links.map((link) => (
+        <Link
+          key={link.path}
+          href={link.path}
+          className={`list-group-item border-0 ${
+            pathname.includes(link.path) ? "active" : "text-danger"
+          }`}
+        >
+          {link.label}
+        </Link>
+      ))}
+    </div>
+  );
+}

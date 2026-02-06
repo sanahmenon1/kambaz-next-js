@@ -1,77 +1,160 @@
 import Link from "next/link";
+import { Button, Form, InputGroup, ListGroup, ListGroupItem } from "react-bootstrap";
+import InputGroupText from "react-bootstrap/esm/InputGroupText";
+import { FaPlus, FaFilePen } from "react-icons/fa6";
+import { FaSearch } from "react-icons/fa";
+import { BsGripVertical, BsPlus } from "react-icons/bs";
+import { IoEllipsisVertical, IoChevronDown } from "react-icons/io5";
+import GreenCheckmark from "../modules/GreenCheckmark";
 
 export default function Assignments() {
   return (
-    <div id="wd-assignments">
-      <input placeholder="Search for Assignments" id="wd-search-assignment" />
-      <button id="wd-add-assignment-group">+ Group</button>
-      <button id="wd-add-assignment">+ Assignment</button>
+    <div id="wd-assignments" className="p-3">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <InputGroup className="w-50">
+          <InputGroupText>
+            <FaSearch />
+          </InputGroupText>
+          <Form.Control
+            placeholder="Search for Assignments"
+            id="wd-search-assignment"
+          />
+        </InputGroup>
+        <div>
+          <Button variant="secondary" size="lg" className="me-1" id="wd-add-assignment-group">
+            <FaPlus className="me-2" />
+            Group
+          </Button>
+          <Button variant="danger" size="lg" className="me-1" id="wd-add-assignment">
+            <FaPlus className="me-2" />
+            Assignment
+          </Button>
+        </div>
+      </div>
+      <div className="mb-4">
+        <div className="d-flex align-items-center p-3 wd-title border border-bottom-0">
+          <BsGripVertical className="me-2 fs-4" />
+          <IoChevronDown className="me-2 fs-5" />
+          <span className="fw-bold me-2">ASSIGNMENTS</span>
+          <span className="me-auto"></span>
+          <span className="border rounded-pill px-3 py-1 me-2 text-muted fs-6">40% of Total</span>
+          <BsPlus className="fs-4 me-2" />
+          <IoEllipsisVertical className="fs-4" />
+        </div>
 
-      <h3 id="wd-assignments-title">
-        ASSIGNMENTS 40% of Total <button>+</button>
-      </h3>
+        <ListGroup className="rounded-0" id="wd-assignment-list">
+          <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
+            <div className="d-flex align-items-start">
+              <BsGripVertical className="me-2 fs-4 mt-2" />
+              <FaFilePen className="me-2 fs-4 mt-2 text-success" />
+              <div className="flex-fill">
+                <Link
+                  href="/courses/1234/assignments/123"
+                  className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
+                >
+                  A1
+                </Link>
+                <br />
+                <span className="text-danger">Multiple Modules</span> | <span className="text-muted fw-bold">Not available until</span> <span className="text-muted">May 6 at 12:00am</span> |
+                <br />
+                <span className="text-muted fw-bold">Due</span> <span className="text-muted">May 13 at 11:59pm</span> | 100 pts
+              </div>
+              <div className="float-end mt-2">
+                <GreenCheckmark />
+                <IoEllipsisVertical className="fs-4" />
+              </div>
+            </div>
+          </ListGroupItem>
 
-      <ul id="wd-assignment-list">
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/123"
-            className="wd-assignment-link"
-          >
-            A1 - ENV + HTML
-          </Link>
-          <br />
-          Multiple Modules | <b>Not available until</b> May 6 at 12:00am |
-          <br />
-          <b>Due</b> May 13 at 11:59pm | 100 pts
-        </li>
+          <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
+            <div className="d-flex align-items-start">
+              <BsGripVertical className="me-2 fs-4 mt-2" />
+              <FaFilePen className="me-2 fs-4 mt-2 text-success" />
+              <div className="flex-fill">
+                <Link
+                  href="/courses/1234/assignments/124"
+                  className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
+                >
+                  A2
+                </Link>
+                <br />
+                <span className="text-danger">Multiple Modules</span> | <span className="text-muted fw-bold">Not available until</span> <span className="text-muted">May 13 at 12:00am</span> |
+                <br />
+                <span className="text-muted fw-bold">Due</span> <span className="text-muted">May 20 at 11:59pm</span> | 100 pts
+              </div>
+              <div className="float-end mt-2">
+                <GreenCheckmark />
+                <IoEllipsisVertical className="fs-4" />
+              </div>
+            </div>
+          </ListGroupItem>
 
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/124"
-            className="wd-assignment-link"
-          >
-            A2 - CSS + BOOTSTRAP
-          </Link>
-          <br />
-          Multiple Modules | <b>Not available until</b> May 13 at 12:00am |
-          <br />
-          <b>Due</b> May 20 at 11:59pm | 100 pts
-        </li>
+          <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
+            <div className="d-flex align-items-start">
+              <BsGripVertical className="me-2 fs-4 mt-2" />
+              <FaFilePen className="me-2 fs-4 mt-2 text-success" />
+              <div className="flex-fill">
+                <Link
+                  href="/courses/1234/assignments/125"
+                  className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
+                >
+                  A3
+                </Link>
+                <br />
+                <span className="text-danger">Multiple Modules</span> | <span className="text-muted fw-bold">Not available until</span> <span className="text-muted">May 20 at 12:00am</span> |
+                <br />
+                <span className="text-muted fw-bold">Due</span> <span className="text-muted">May 27 at 11:59pm</span> | 100 pts
+              </div>
+              <div className="float-end mt-2">
+                <GreenCheckmark />
+                <IoEllipsisVertical className="fs-4" />
+              </div>
+            </div>
+          </ListGroupItem>
+        </ListGroup>
+      </div>
 
-        <li className="wd-assignment-list-item">
-          <Link
-            href="/courses/1234/assignments/125"
-            className="wd-assignment-link"
-          >
-            A3 - JAVASCRIPT + REACT
-          </Link>
-          <br />
-          Multiple Modules | <b>Not available until</b> May 20 at 12:00am |
-          <br />
-          <b>Due</b> May 27 at 11:59pm | 100 pts
-        </li>
-      </ul>
+      <div className="mb-4">
+        <div className="d-flex align-items-center p-3 wd-title border border-bottom-0">
+          <BsGripVertical className="me-2 fs-4" />
+          <IoChevronDown className="me-2 fs-5" />
+          <span className="fw-bold me-2">QUIZZES</span>
+          <span className="me-auto"></span>
+          <span className="border rounded-pill px-3 py-1 me-2 text-muted fs-6">10% of Total</span>
+          <BsPlus className="fs-4 me-2" />
+          <IoEllipsisVertical className="fs-4" />
+        </div>
+        <ListGroup className="rounded-0" id="wd-quiz-list">
+        </ListGroup>
+      </div>
 
-      <h3 id="wd-quizzes-title">
-        QUIZZES 10% of Total <button>+</button>
-      </h3>
+      <div className="mb-4">
+        <div className="d-flex align-items-center p-3 wd-title border border-bottom-0">
+          <BsGripVertical className="me-2 fs-4" />
+          <IoChevronDown className="me-2 fs-5" />
+          <span className="fw-bold me-2">EXAMS</span>
+          <span className="me-auto"></span>
+          <span className="border rounded-pill px-3 py-1 me-2 text-muted fs-6">20% of Total</span>
+          <BsPlus className="fs-4 me-2" />
+          <IoEllipsisVertical className="fs-4" />
+        </div>
+        <ListGroup className="rounded-0" id="wd-exam-list">
+        </ListGroup>
+      </div>
 
-      <ul id="wd-quiz-list">
-      </ul>
-
-      <h3 id="wd-exams-title">
-        EXAMS 20% of Total <button>+</button>
-      </h3>
-
-      <ul id="wd-exam-list">
-      </ul>
-
-      <h3 id="wd-project-title">
-        PROJECT 30% of Total <button>+</button>
-      </h3>
-
-      <ul id="wd-project-list">
-      </ul>
+      <div className="mb-4">
+        <div className="d-flex align-items-center p-3 wd-title border border-bottom-0">
+          <BsGripVertical className="me-2 fs-4" />
+          <IoChevronDown className="me-2 fs-5" />
+          <span className="fw-bold me-2">PROJECT</span>
+          <span className="me-auto"></span>
+          <span className="border rounded-pill px-3 py-1 me-2 text-muted fs-6">30% of Total</span>
+          <BsPlus className="fs-4 me-2" />
+          <IoEllipsisVertical className="fs-4" />
+        </div>
+        <ListGroup className="rounded-0" id="wd-project-list">
+        </ListGroup>
+      </div>
     </div>
   );
 }
