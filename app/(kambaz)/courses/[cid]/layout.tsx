@@ -9,7 +9,7 @@ export default async function CoursesLayout(
  const { cid } = await params;
  const course = courses.find((course) => course._id === cid);
  return (
-<div id="wd-courses">
+<div id="wd-courses" className="pt-3">
   <h2 className="text-danger">
     <FaAlignJustify className="me-4 fs-4 mb-1" />
     <Breadcrumb course={course} /> </h2>

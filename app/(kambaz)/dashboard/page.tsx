@@ -4,7 +4,7 @@ import { Button, Card, CardBody, CardImg, CardText, CardTitle, Col, Row } from "
 export default function Dashboard() {
  const courses = db.courses;
  return (
-  <div id="wd-dashboard">
+  <div id="wd-dashboard" className="p-3">
    <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
    <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2> <hr />
    <div id="wd-dashboard-courses">
