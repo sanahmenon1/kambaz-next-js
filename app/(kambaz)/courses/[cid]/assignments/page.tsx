@@ -1,3 +1,5 @@
+"use client"
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button, Form, InputGroup, ListGroup, ListGroupItem } from "react-bootstrap";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
@@ -6,8 +8,12 @@ import { FaSearch } from "react-icons/fa";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { IoEllipsisVertical, IoChevronDown } from "react-icons/io5";
 import GreenCheckmark from "../modules/GreenCheckmark";
+import * as db from "../../../database";
 
 export default function Assignments() {
+  const { cid } = useParams();
+  const assignments = db.assignments.filter((a: any) => a.course === cid);
+
   return (
     <div id="wd-assignments" className="p-3">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -31,6 +37,7 @@ export default function Assignments() {
           </Button>
         </div>
       </div>
+
       <div className="mb-4">
         <div className="d-flex align-items-center p-3 wd-title border border-bottom-0">
           <BsGripVertical className="me-2 fs-4" />
@@ -43,74 +50,33 @@ export default function Assignments() {
         </div>
 
         <ListGroup className="rounded-0" id="wd-assignment-list">
-          <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-            <div className="d-flex align-items-start">
-              <BsGripVertical className="me-2 fs-4 mt-2" />
-              <FaFilePen className="me-2 fs-4 mt-2 text-success" />
-              <div className="flex-fill">
-                <Link
-                  href="/courses/1234/assignments/123"
-                  className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
-                >
-                  A1
-                </Link>
-                <br />
-                <span className="text-danger">Multiple Modules</span> | <span className="text-muted fw-bold">Not available until</span> <span className="text-muted">May 6 at 12:00am</span> |
-                <br />
-                <span className="text-muted fw-bold">Due</span> <span className="text-muted">May 13 at 11:59pm</span> | 100 pts
+          {assignments.map((assignment: any) => (
+            <ListGroupItem key={assignment._id} className="wd-assignment-list-item p-3 ps-1">
+              <div className="d-flex align-items-start">
+                <BsGripVertical className="me-2 fs-4 mt-2" />
+                <FaFilePen className="me-2 fs-4 mt-2 text-success" />
+                <div className="flex-fill">
+                  <Link
+                    href={`/courses/${cid}/assignments/${assignment._id}`}
+                    className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
+                  >
+                    {assignment.title}
+                  </Link>
+                  <br />
+                  <span className="text-danger">Multiple Modules</span> |{" "}
+                  <span className="text-muted fw-bold">Not available until</span>{" "}
+                  <span className="text-muted">{assignment.availableFrom}</span> |
+                  <br />
+                  <span className="text-muted fw-bold">Due</span>{" "}
+                  <span className="text-muted">{assignment.dueDate}</span> | {assignment.points} pts
+                </div>
+                <div className="float-end mt-2">
+                  <GreenCheckmark />
+                  <IoEllipsisVertical className="fs-4" />
+                </div>
               </div>
-              <div className="float-end mt-2">
-                <GreenCheckmark />
-                <IoEllipsisVertical className="fs-4" />
-              </div>
-            </div>
-          </ListGroupItem>
-
-          <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-            <div className="d-flex align-items-start">
-              <BsGripVertical className="me-2 fs-4 mt-2" />
-              <FaFilePen className="me-2 fs-4 mt-2 text-success" />
-              <div className="flex-fill">
-                <Link
-                  href="/courses/1234/assignments/124"
-                  className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
-                >
-                  A2
-                </Link>
-                <br />
-                <span className="text-danger">Multiple Modules</span> | <span className="text-muted fw-bold">Not available until</span> <span className="text-muted">May 13 at 12:00am</span> |
-                <br />
-                <span className="text-muted fw-bold">Due</span> <span className="text-muted">May 20 at 11:59pm</span> | 100 pts
-              </div>
-              <div className="float-end mt-2">
-                <GreenCheckmark />
-                <IoEllipsisVertical className="fs-4" />
-              </div>
-            </div>
-          </ListGroupItem>
-
-          <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-            <div className="d-flex align-items-start">
-              <BsGripVertical className="me-2 fs-4 mt-2" />
-              <FaFilePen className="me-2 fs-4 mt-2 text-success" />
-              <div className="flex-fill">
-                <Link
-                  href="/courses/1234/assignments/125"
-                  className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
-                >
-                  A3
-                </Link>
-                <br />
-                <span className="text-danger">Multiple Modules</span> | <span className="text-muted fw-bold">Not available until</span> <span className="text-muted">May 20 at 12:00am</span> |
-                <br />
-                <span className="text-muted fw-bold">Due</span> <span className="text-muted">May 27 at 11:59pm</span> | 100 pts
-              </div>
-              <div className="float-end mt-2">
-                <GreenCheckmark />
-                <IoEllipsisVertical className="fs-4" />
-              </div>
-            </div>
-          </ListGroupItem>
+            </ListGroupItem>
+          ))}
         </ListGroup>
       </div>
 
