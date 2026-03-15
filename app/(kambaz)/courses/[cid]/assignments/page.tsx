@@ -1,18 +1,47 @@
 "use client"
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Button, Form, InputGroup, ListGroup, ListGroupItem } from "react-bootstrap";
+import { Button, Form, InputGroup, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
 import { FaPlus, FaFilePen } from "react-icons/fa6";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaTrash } from "react-icons/fa";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { IoEllipsisVertical, IoChevronDown } from "react-icons/io5";
 import GreenCheckmark from "../modules/GreenCheckmark";
-import * as db from "../../../database";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../store";
+import { deleteAssignment } from "./reducer";
+import { useState } from "react";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = db.assignments.filter((a: any) => a.course === cid);
+  const { assignments } = useSelector((state: RootState) => state.assignmentsReducer);
+  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+  const dispatch = useDispatch();
+  const isFaculty = currentUser?.role === "FACULTY";
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [assignmentToDelete, setAssignmentToDelete] = useState<any>(null);
+
+  const handleDeleteClick = (assignment: any) => {
+    setAssignmentToDelete(assignment);
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (assignmentToDelete) {
+      dispatch(deleteAssignment(assignmentToDelete._id));
+    }
+    setShowDeleteDialog(false);
+    setAssignmentToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteDialog(false);
+    setAssignmentToDelete(null);
+  };
+
+  const courseAssignments = assignments.filter((a: any) => a.course === cid);
 
   return (
     <div id="wd-assignments" className="p-3">
@@ -26,16 +55,18 @@ export default function Assignments() {
             id="wd-search-assignment"
           />
         </InputGroup>
-        <div>
-          <Button variant="secondary" size="lg" className="me-1" id="wd-add-assignment-group">
-            <FaPlus className="me-2" />
-            Group
-          </Button>
-          <Button variant="danger" size="lg" className="me-1" id="wd-add-assignment">
-            <FaPlus className="me-2" />
-            Assignment
-          </Button>
-        </div>
+        {isFaculty && (
+          <div>
+            <Button variant="secondary" size="lg" className="me-1" id="wd-add-assignment-group">
+              <FaPlus className="me-2" />
+              Group
+            </Button>
+            <Link href={`/courses/${cid}/assignments/new`} className="btn btn-danger btn-lg me-1" id="wd-add-assignment">
+              <FaPlus className="me-2" />
+              Assignment
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="mb-4">
@@ -50,7 +81,7 @@ export default function Assignments() {
         </div>
 
         <ListGroup className="rounded-0" id="wd-assignment-list">
-          {assignments.map((assignment: any) => (
+          {courseAssignments.map((assignment: any) => (
             <ListGroupItem key={assignment._id} className="wd-assignment-list-item p-3 ps-1">
               <div className="d-flex align-items-start">
                 <BsGripVertical className="me-2 fs-4 mt-2" />
@@ -70,8 +101,13 @@ export default function Assignments() {
                   <span className="text-muted fw-bold">Due</span>{" "}
                   <span className="text-muted">{assignment.dueDate}</span> | {assignment.points} pts
                 </div>
-                <div className="float-end mt-2">
+                <div className="d-flex align-items-center mt-2">
                   <GreenCheckmark />
+                  {isFaculty && (
+                    <FaTrash className="text-danger ms-2 me-2 cursor-pointer"
+                      onClick={() => handleDeleteClick(assignment)}
+                    />
+                  )}
                   <IoEllipsisVertical className="fs-4" />
                 </div>
               </div>
@@ -121,6 +157,24 @@ export default function Assignments() {
         <ListGroup className="rounded-0" id="wd-project-list">
         </ListGroup>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Modal show={showDeleteDialog} onHide={handleCancelDelete}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Assignment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to remove the assignment &quot;{assignmentToDelete?.title}&quot;?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelDelete}>
+            No
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
