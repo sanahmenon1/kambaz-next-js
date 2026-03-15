@@ -5,7 +5,7 @@ import { FormLabel, FormControl, FormSelect, FormCheck, Row, Col, Button } from 
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../store";
 import { addAssignment, updateAssignment } from "../reducer";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AssignmentEditor() {
     const { cid, aid } = useParams();
@@ -16,26 +16,24 @@ export default function AssignmentEditor() {
     const isNew = aid === "new";
     const existingAssignment = assignments.find((a: any) => a._id === aid);
 
-    const [assignment, setAssignment] = useState<any>({
-      _id: "",
-      title: "New Assignment",
-      course: cid as string,
-      description: "New Assignment Description",
-      points: 100,
-      group: "ASSIGNMENTS",
-      displayGradeAs: "Percentage",
-      submissionType: "Online",
-      assignTo: "Everyone",
-      dueDate: "",
-      availableFrom: "",
-      availableUntil: "",
-    });
-
-    useEffect(() => {
-      if (!isNew && existingAssignment) {
-        setAssignment(existingAssignment);
-      }
-    }, [isNew, existingAssignment]);
+    const [assignment, setAssignment] = useState<any>(
+      !isNew && existingAssignment
+        ? existingAssignment
+        : {
+            _id: "",
+            title: "New Assignment",
+            course: cid as string,
+            description: "New Assignment Description",
+            points: 100,
+            group: "ASSIGNMENTS",
+            displayGradeAs: "Percentage",
+            submissionType: "Online",
+            assignTo: "Everyone",
+            dueDate: "",
+            availableFrom: "",
+            availableUntil: "",
+          }
+    );
 
     const handleSave = () => {
       if (isNew) {

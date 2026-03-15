@@ -56,16 +56,16 @@ export default function Assignments() {
           />
         </InputGroup>
         {isFaculty && (
-          <div>
-            <Button variant="secondary" size="lg" className="me-1" id="wd-add-assignment-group">
-              <FaPlus className="me-2" />
-              Group
-            </Button>
+        <div>
+          <Button variant="secondary" size="lg" className="me-1" id="wd-add-assignment-group">
+            <FaPlus className="me-2" />
+            Group
+          </Button>
             <Link href={`/courses/${cid}/assignments/new`} className="btn btn-danger btn-lg me-1" id="wd-add-assignment">
-              <FaPlus className="me-2" />
-              Assignment
+            <FaPlus className="me-2" />
+            Assignment
             </Link>
-          </div>
+        </div>
         )}
       </div>
 

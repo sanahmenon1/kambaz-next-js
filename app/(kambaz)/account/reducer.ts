@@ -5,13 +5,13 @@ interface User {
   password: string;
   firstName: string;
   lastName: string;
-  email: string;
   dob: string;
+  email: string;
   role: string;
-  loginId?: string;
-  section?: string;
-  lastActivity?: string;
-  totalActivity?: string;
+  loginId: string;
+  section: string;
+  lastActivity: string;
+  totalActivity: string;
 }
 const initialState: { currentUser: User | null } = {
   currentUser: null,

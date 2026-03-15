@@ -6,19 +6,21 @@ import { setCurrentUser } from "../reducer";
 import { RootState } from "../../store";
 import { Button, FormControl } from "react-bootstrap";
 export default function Profile() {
+ const [profile, setProfile] = useState<any>({});
  const dispatch = useDispatch();
  const router = useRouter();
  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
- const [profile, setProfile] = useState<any>(currentUser || {});
+ const fetchProfile = () => {
+   if (!currentUser) return router.push("/account/signin");
+   setProfile(currentUser);
+ };
  const signout = () => {
    dispatch(setCurrentUser(null));
    router.push("/account/signin");
  };
  useEffect(() => {
-   if (!currentUser) {
-     router.push("/account/signin");
-   }
- }, [currentUser, router]);
+   fetchProfile();
+ }, []);
  return (
    <div className="wd-profile-screen">
      <h3>Profile</h3>
