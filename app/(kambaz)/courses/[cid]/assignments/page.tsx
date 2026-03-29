@@ -10,8 +10,9 @@ import { IoEllipsisVertical, IoChevronDown } from "react-icons/io5";
 import GreenCheckmark from "../modules/GreenCheckmark";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store";
-import { deleteAssignment } from "./reducer";
-import { useState } from "react";
+import { setAssignments } from "./reducer";
+import { useState, useEffect } from "react";
+import * as client from "./client";
 
 export default function Assignments() {
   const { cid } = useParams();
@@ -23,14 +24,24 @@ export default function Assignments() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<any>(null);
 
+  const fetchAssignments = async () => {
+    const assignments = await client.findAssignmentsForCourse(cid as string);
+    dispatch(setAssignments(assignments));
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+
   const handleDeleteClick = (assignment: any) => {
     setAssignmentToDelete(assignment);
     setShowDeleteDialog(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (assignmentToDelete) {
-      dispatch(deleteAssignment(assignmentToDelete._id));
+      await client.deleteAssignment(assignmentToDelete._id);
+      dispatch(setAssignments(assignments.filter((a: any) => a._id !== assignmentToDelete._id)));
     }
     setShowDeleteDialog(false);
     setAssignmentToDelete(null);
@@ -56,16 +67,17 @@ export default function Assignments() {
           />
         </InputGroup>
         {isFaculty && (
-        <div>
-          <Button variant="secondary" size="lg" className="me-1" id="wd-add-assignment-group">
-            <FaPlus className="me-2" />
-            Group
-          </Button>
-            <Link href={`/courses/${cid}/assignments/new`} className="btn btn-danger btn-lg me-1" id="wd-add-assignment">
-            <FaPlus className="me-2" />
-            Assignment
+          <div>
+            <Button variant="secondary" size="lg" className="me-1" id="wd-add-assignment-group">
+              <FaPlus className="me-2" />
+              Group
+            </Button>
+            <Link href={`/kambaz/courses/${cid}/assignments/new`}
+              className="btn btn-danger btn-lg me-1" id="wd-add-assignment">
+              <FaPlus className="me-2" />
+              Assignment
             </Link>
-        </div>
+          </div>
         )}
       </div>
 
@@ -88,7 +100,7 @@ export default function Assignments() {
                 <FaFilePen className="me-2 fs-4 mt-2 text-success" />
                 <div className="flex-fill">
                   <Link
-                    href={`/courses/${cid}/assignments/${assignment._id}`}
+                    href={`/kambaz/courses/${cid}/assignments/${assignment._id}`}
                     className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
                   >
                     {assignment.title}
@@ -126,8 +138,7 @@ export default function Assignments() {
           <BsPlus className="fs-4 me-2" />
           <IoEllipsisVertical className="fs-4" />
         </div>
-        <ListGroup className="rounded-0" id="wd-quiz-list">
-        </ListGroup>
+        <ListGroup className="rounded-0" id="wd-quiz-list"></ListGroup>
       </div>
 
       <div className="mb-4">
@@ -140,8 +151,7 @@ export default function Assignments() {
           <BsPlus className="fs-4 me-2" />
           <IoEllipsisVertical className="fs-4" />
         </div>
-        <ListGroup className="rounded-0" id="wd-exam-list">
-        </ListGroup>
+        <ListGroup className="rounded-0" id="wd-exam-list"></ListGroup>
       </div>
 
       <div className="mb-4">
@@ -154,11 +164,9 @@ export default function Assignments() {
           <BsPlus className="fs-4 me-2" />
           <IoEllipsisVertical className="fs-4" />
         </div>
-        <ListGroup className="rounded-0" id="wd-project-list">
-        </ListGroup>
+        <ListGroup className="rounded-0" id="wd-project-list"></ListGroup>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <Modal show={showDeleteDialog} onHide={handleCancelDelete}>
         <Modal.Header closeButton>
           <Modal.Title>Delete Assignment</Modal.Title>
@@ -167,12 +175,8 @@ export default function Assignments() {
           Are you sure you want to remove the assignment &quot;{assignmentToDelete?.title}&quot;?
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelDelete}>
-            No
-          </Button>
-          <Button variant="danger" onClick={handleConfirmDelete}>
-            Yes
-          </Button>
+          <Button variant="secondary" onClick={handleCancelDelete}>No</Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>Yes</Button>
         </Modal.Footer>
       </Modal>
     </div>

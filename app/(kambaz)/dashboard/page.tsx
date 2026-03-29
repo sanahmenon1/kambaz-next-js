@@ -1,12 +1,13 @@
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { v4 as uuidv4 } from "uuid";
 import { Button, Card, CardBody, CardImg, CardText, CardTitle, Col, FormControl, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewCourse, deleteCourse, updateCourse } from "../courses/reducer";
+import { setCourses } from "../courses/reducer";
 import { enroll, unenroll } from "../enrollments/reducer";
 import { RootState } from "../store";
+import * as client from "../courses/client";
+import * as enrollmentClient from "../enrollments/client";
 
 export default function Dashboard() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
@@ -21,13 +22,57 @@ export default function Dashboard() {
   });
 
   const [showAllCourses, setShowAllCourses] = useState(false);
-
   const isFaculty = currentUser?.role === "FACULTY";
 
   const isEnrolled = (courseId: string) =>
     enrollments.some(
       (e) => e.user === currentUser?._id && e.course === courseId
     );
+
+  const fetchCourses = async () => {
+    try {
+      const courses = await client.findMyCourses();
+      dispatch(setCourses(courses));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, [currentUser]);
+
+  const onAddNewCourse = async () => {
+    const newCourse = await client.createCourse(course);
+    dispatch(setCourses([...courses, newCourse]));
+  };
+
+  const onDeleteCourse = async (courseId: string) => {
+    await client.deleteCourse(courseId);
+    dispatch(setCourses(courses.filter((c) => c._id !== courseId)));
+  };
+
+  const onUpdateCourse = async () => {
+    await client.updateCourse(course);
+    dispatch(setCourses(courses.map((c) => {
+      if (c._id === course._id) { return course; }
+      else { return c; }
+    })));
+  };
+
+  const handleEnroll = async (courseId: string) => {
+    if (!currentUser) return;
+    await enrollmentClient.enrollUserInCourse(currentUser._id, courseId);
+    dispatch(enroll({ userId: currentUser._id, courseId }));
+    fetchCourses();
+  };
+
+  const handleUnenroll = async (courseId: string) => {
+    if (!currentUser) return;
+    await enrollmentClient.unenrollUserFromCourse(currentUser._id, courseId);
+    dispatch(unenroll({ userId: currentUser._id, courseId }));
+    fetchCourses();
+  };
 
   const filteredCourses = !currentUser
     ? []
@@ -40,11 +85,8 @@ export default function Dashboard() {
       <h1 id="wd-dashboard-title">
         Dashboard
         {currentUser && (
-          <Button
-            variant={showAllCourses ? "primary" : "primary"}
-            className="float-end"
-            onClick={() => setShowAllCourses(!showAllCourses)}
-          >
+          <Button variant="primary" className="float-end"
+            onClick={() => setShowAllCourses(!showAllCourses)}>
             Enrollments
           </Button>
         )}
@@ -55,9 +97,9 @@ export default function Dashboard() {
           <h5>New Course
             <button className="btn btn-primary float-end"
               id="wd-add-new-course-click"
-              onClick={() => dispatch(addNewCourse(course))}> Add </button>
+              onClick={onAddNewCourse}> Add </button>
             <button className="btn btn-warning float-end me-2"
-              onClick={() => dispatch(updateCourse(course))} id="wd-update-course-click">
+              onClick={onUpdateCourse} id="wd-update-course-click">
               Update </button>
           </h5> <br />
           <FormControl value={course.name} className="mb-2"
@@ -73,7 +115,7 @@ export default function Dashboard() {
           {filteredCourses.map((course) => (
             <Col className="wd-dashboard-course" style={{ width: "300px" }} key={course._id}>
               <Card>
-                <Link href={isEnrolled(course._id) ? `/courses/${course._id}/home` : `/dashboard`}
+                <Link href={isEnrolled(course._id) ? `/kambaz/courses/${course._id}/home` : `/kambaz/dashboard`}
                   className="wd-dashboard-course-link text-decoration-none text-dark">
                   <CardImg src={course.image} variant="top" width="100%" height={160} />
                   <CardBody className="card-body">
@@ -86,7 +128,7 @@ export default function Dashboard() {
                       <>
                         <Button onClick={(event) => {
                           event.preventDefault();
-                          dispatch(deleteCourse(course._id));
+                          onDeleteCourse(course._id);
                         }} className="btn btn-danger float-end"
                           id="wd-delete-course-click">
                           Delete
@@ -103,25 +145,19 @@ export default function Dashboard() {
                     )}
                     {showAllCourses && currentUser && (
                       isEnrolled(course._id) ? (
-                        <Button
-                          variant="danger"
-                          className="float-end"
+                        <Button variant="danger" className="float-end"
                           onClick={(event) => {
                             event.preventDefault();
-                            dispatch(unenroll({ userId: currentUser._id, courseId: course._id }));
-                          }}
-                        >
+                            handleUnenroll(course._id);
+                          }}>
                           Unenroll
                         </Button>
                       ) : (
-                        <Button
-                          variant="success"
-                          className="float-end"
+                        <Button variant="success" className="float-end"
                           onClick={(event) => {
                             event.preventDefault();
-                            dispatch(enroll({ userId: currentUser._id, courseId: course._id }));
-                          }}
-                        >
+                            handleEnroll(course._id);
+                          }}>
                           Enroll
                         </Button>
                       )
