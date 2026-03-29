@@ -15,7 +15,7 @@ export default function Signup() {
   const signup = async () => {
     const currentUser = await client.signup(user);
     dispatch(setCurrentUser(currentUser));
-    router.push("/kambaz/account/profile");
+    router.push("/account/profile");
   };
 
   return (
@@ -30,7 +30,7 @@ export default function Signup() {
       <button onClick={signup} className="wd-signup-btn btn btn-primary mb-2 w-100">
         Sign up
       </button><br />
-      <Link href="/kambaz/account/signin" className="wd-signin-link">Sign in</Link>
+      <Link href="/account/signin" className="wd-signin-link">Sign in</Link>
     </div>
   );
 }

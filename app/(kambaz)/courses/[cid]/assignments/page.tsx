@@ -72,7 +72,7 @@ export default function Assignments() {
               <FaPlus className="me-2" />
               Group
             </Button>
-            <Link href={`/kambaz/courses/${cid}/assignments/new`}
+            <Link href={`/courses/${cid}/assignments/new`}
               className="btn btn-danger btn-lg me-1" id="wd-add-assignment">
               <FaPlus className="me-2" />
               Assignment
@@ -100,7 +100,7 @@ export default function Assignments() {
                 <FaFilePen className="me-2 fs-4 mt-2 text-success" />
                 <div className="flex-fill">
                   <Link
-                    href={`/kambaz/courses/${cid}/assignments/${assignment._id}`}
+                    href={`/courses/${cid}/assignments/${assignment._id}`}
                     className="wd-assignment-link fw-bold text-decoration-none text-dark fs-5"
                   >
                     {assignment.title}

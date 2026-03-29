@@ -29,49 +29,99 @@ export default function Dashboard() {
       (e) => e.user === currentUser?._id && e.course === courseId
     );
 
-  const fetchCourses = async () => {
+  const fetchMyCourses = async () => {
     try {
-      const courses = await client.findMyCourses();
-      dispatch(setCourses(courses));
+      const data = await client.findMyCourses();
+      dispatch(setCourses(data));
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchCourses();
+    fetchMyCourses();
   }, [currentUser]);
 
+  const toggleEnrollmentsView = async () => {
+    const next = !showAllCourses;
+    setShowAllCourses(next);
+    try {
+      if (next) {
+        const all = await client.fetchAllCourses();
+        dispatch(setCourses(all));
+      } else {
+        await fetchMyCourses();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const isNewCourseDraft = course._id === "0";
+
   const onAddNewCourse = async () => {
-    const newCourse = await client.createCourse(course);
-    dispatch(setCourses([...courses, newCourse]));
+    try {
+      const newCourse = await client.createCourse(course);
+      dispatch(setCourses([...courses, newCourse]));
+      setCourse({
+        _id: "0",
+        name: "New Course",
+        number: "New Number",
+        startDate: "2023-09-10",
+        endDate: "2023-12-15",
+        image: "/images/reactjs.png",
+        description: "New Description",
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const onDeleteCourse = async (courseId: string) => {
-    await client.deleteCourse(courseId);
-    dispatch(setCourses(courses.filter((c) => c._id !== courseId)));
+    try {
+      await client.deleteCourse(courseId);
+      dispatch(setCourses(courses.filter((c) => c._id !== courseId)));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const onUpdateCourse = async () => {
-    await client.updateCourse(course);
-    dispatch(setCourses(courses.map((c) => {
-      if (c._id === course._id) { return course; }
-      else { return c; }
-    })));
+    if (isNewCourseDraft) return;
+    try {
+      const updated = await client.updateCourse(course);
+      dispatch(
+        setCourses(
+          courses.map((c) => (c._id === course._id ? updated : c))
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleEnroll = async (courseId: string) => {
     if (!currentUser) return;
     await enrollmentClient.enrollUserInCourse(currentUser._id, courseId);
     dispatch(enroll({ userId: currentUser._id, courseId }));
-    fetchCourses();
+    if (showAllCourses) {
+      const all = await client.fetchAllCourses();
+      dispatch(setCourses(all));
+    } else {
+      await fetchMyCourses();
+    }
   };
 
   const handleUnenroll = async (courseId: string) => {
     if (!currentUser) return;
     await enrollmentClient.unenrollUserFromCourse(currentUser._id, courseId);
     dispatch(unenroll({ userId: currentUser._id, courseId }));
-    fetchCourses();
+    if (showAllCourses) {
+      const all = await client.fetchAllCourses();
+      dispatch(setCourses(all));
+    } else {
+      await fetchMyCourses();
+    }
   };
 
   const filteredCourses = !currentUser
@@ -86,7 +136,7 @@ export default function Dashboard() {
         Dashboard
         {currentUser && (
           <Button variant="primary" className="float-end"
-            onClick={() => setShowAllCourses(!showAllCourses)}>
+            onClick={() => void toggleEnrollmentsView()}>
             Enrollments
           </Button>
         )}
@@ -99,7 +149,10 @@ export default function Dashboard() {
               id="wd-add-new-course-click"
               onClick={onAddNewCourse}> Add </button>
             <button className="btn btn-warning float-end me-2"
-              onClick={onUpdateCourse} id="wd-update-course-click">
+              onClick={() => void onUpdateCourse()}
+              id="wd-update-course-click"
+              disabled={isNewCourseDraft}
+              title={isNewCourseDraft ? "Click Edit on a course card first" : undefined}>
               Update </button>
           </h5> <br />
           <FormControl value={course.name} className="mb-2"
@@ -115,7 +168,7 @@ export default function Dashboard() {
           {filteredCourses.map((course) => (
             <Col className="wd-dashboard-course" style={{ width: "300px" }} key={course._id}>
               <Card>
-                <Link href={isEnrolled(course._id) ? `/kambaz/courses/${course._id}/home` : `/kambaz/dashboard`}
+                <Link href={isEnrolled(course._id) ? `/courses/${course._id}/home` : `/dashboard`}
                   className="wd-dashboard-course-link text-decoration-none text-dark">
                   <CardImg src={course.image} variant="top" width="100%" height={160} />
                   <CardBody className="card-body">

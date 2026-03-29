@@ -40,7 +40,7 @@ export default function AssignmentEditor() {
 
   useEffect(() => {
     if (!isFaculty && isNew) {
-      router.replace(`/kambaz/courses/${cid}/assignments`);
+      router.replace(`/courses/${cid}/assignments`);
     }
   }, [isFaculty, isNew, cid, router]);
 
@@ -56,11 +56,11 @@ export default function AssignmentEditor() {
       const updated = await client.updateAssignment(assignment);
       dispatch(updateAssignment(updated));
     }
-    router.push(`/kambaz/courses/${cid}/assignments`);
+    router.push(`/courses/${cid}/assignments`);
   };
 
   const handleCancel = () => {
-    router.push(`/kambaz/courses/${cid}/assignments`);
+    router.push(`/courses/${cid}/assignments`);
   };
 
   return (
