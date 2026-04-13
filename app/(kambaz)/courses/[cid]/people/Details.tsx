@@ -16,8 +16,12 @@ export default function PeopleDetails({ uid, onClose }: { uid: string | null; on
   const fetchUser = async () => {
     if (!uid) return;
     const u = await client.findUserById(uid);
+    if (!u) {
+      onClose();
+      return;
+    }
     setUser(u);
-    setName(`${u.firstName} ${u.lastName}`);
+    setName(`${u.firstName ?? ""} ${u.lastName ?? ""}`);
     setEmail(u.email || "");
     setRole(u.role || "USER");
   };
