@@ -12,7 +12,6 @@ import * as enrollmentClient from "../enrollments/client";
 export default function Dashboard() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
-  const { enrollments } = useSelector((state: RootState) => state.enrollmentsReducer);
   const dispatch = useDispatch();
 
   const [course, setCourse] = useState<any>({
@@ -22,17 +21,19 @@ export default function Dashboard() {
   });
 
   const [showAllCourses, setShowAllCourses] = useState(false);
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState<Set<string>>(
+    () => new Set()
+  );
   const isFaculty = currentUser?.role === "FACULTY";
 
-  const isEnrolled = (courseId: string) =>
-    enrollments.some(
-      (e) => e.user === currentUser?._id && e.course === courseId
-    );
+  /** Must reflect MongoDB enrollments (not static Redux seed) so refresh / Atlas stay correct. */
+  const isEnrolled = (courseId: string) => enrolledCourseIds.has(courseId);
 
   const fetchMyCourses = async () => {
     try {
       const data = await client.findMyCourses();
       dispatch(setCourses(data));
+      setEnrolledCourseIds(new Set(data.map((c: { _id: string }) => c._id)));
     } catch (error) {
       console.error(error);
     }
@@ -47,6 +48,8 @@ export default function Dashboard() {
     setShowAllCourses(next);
     try {
       if (next) {
+        const my = await client.findMyCourses();
+        setEnrolledCourseIds(new Set(my.map((c: { _id: string }) => c._id)));
         const all = await client.fetchAllCourses();
         dispatch(setCourses(all));
       } else {
@@ -63,6 +66,7 @@ export default function Dashboard() {
     try {
       const newCourse = await client.createCourse(course);
       dispatch(setCourses([...courses, newCourse]));
+      setEnrolledCourseIds((prev) => new Set(prev).add(newCourse._id));
       setCourse({
         _id: "0",
         name: "New Course",
@@ -104,6 +108,7 @@ export default function Dashboard() {
     if (!currentUser) return;
     await enrollmentClient.enrollUserInCourse(currentUser._id, courseId);
     dispatch(enroll({ userId: currentUser._id, courseId }));
+    setEnrolledCourseIds((prev) => new Set(prev).add(courseId));
     if (showAllCourses) {
       const all = await client.fetchAllCourses();
       dispatch(setCourses(all));
@@ -116,6 +121,11 @@ export default function Dashboard() {
     if (!currentUser) return;
     await enrollmentClient.unenrollUserFromCourse(currentUser._id, courseId);
     dispatch(unenroll({ userId: currentUser._id, courseId }));
+    setEnrolledCourseIds((prev) => {
+      const next = new Set(prev);
+      next.delete(courseId);
+      return next;
+    });
     if (showAllCourses) {
       const all = await client.fetchAllCourses();
       dispatch(setCourses(all));
@@ -124,11 +134,12 @@ export default function Dashboard() {
     }
   };
 
+  /** When not in "all courses" mode, list is already from findMyCourses (Mongo enrollments). */
   const filteredCourses = !currentUser
     ? []
     : showAllCourses
       ? courses
-      : courses.filter((c) => isEnrolled(c._id));
+      : courses;
 
   return (
     <div id="wd-dashboard" className="p-3">
